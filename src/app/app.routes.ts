@@ -14,6 +14,7 @@ import { inject } from '@angular/core';
 import { AuthService } from './services/auth/auth.service';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
+import { DoctorsComponent } from './components/doctors/doctors.component';
 
 // Guard to prevent authenticated users from accessing certain routes
 const onlyIfNotAuthenticated: CanActivateFn = (
@@ -59,5 +60,10 @@ export const routes: Routes = [
     path: 'signup',
     canActivate: [onlyIfNotAuthenticated],
     component: SignupComponent,
+  },
+  {
+    path: 'doctors',
+    canActivate: [onlyIfAuthenticated],
+    component: DoctorsComponent,
   },
 ];

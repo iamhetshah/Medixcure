@@ -1,68 +1,77 @@
-// Custom User model
+// CustomUser model
 export interface User {
   id?: number;
   first_name: string;
   last_name: string;
   email: string;
-  date_of_birth: string | null;
-  gender: 'male' | 'female' | string;
-  profile_photo?: string;
-  role: 'D' | 'P';
-  license_number?: string;
   username: string;
+  password: string; // Typically, you wouldn't handle the password directly in the frontend
+  date_of_birth?: string;
+  gender?: 'male' | 'female' | string;
+  profile_photo?: string; // URL to the profile photo
+  role?: 'P' | 'D';
+}
+
+// Token model
+export interface Token {
+  id: number;
+  user: User;
+  key: string;
+  created_at: Date;
+  expires_at: Date;
 }
 
 // Hospital model
 export interface Hospital {
-  id: number;
+  id?: number;
   name: string;
   address: string;
-  photo?: string; // Path to the hospital photo
+  photo?: string; // URL to the hospital photo
 }
 
 // Doctor model
 export interface Doctor {
-  id: number;
-  user: User; // One-to-One relation to User
+  id?: number;
+  user: User;
   license_number: string;
   years_of_experience: number;
   qualification: string;
-  hospital: Hospital; // Foreign key to Hospital
+  hospital: Hospital;
 }
 
-// Appointment Slot model
+// AppointmentSlot model
 export interface AppointmentSlot {
-  id: number;
-  doctor: Doctor; // Foreign key to Doctor
-  start_time: string; // DateTimeField in ISO format
-  price: number; // DecimalField mapped to number
-  status: 'available' | 'booked'; // Enum for status choices
+  id?: number;
+  doctor?: Doctor;
+  start_time: Date | number;
+  price: number;
+  status: 'available' | 'booked';
 }
 
 // Appointment model
 export interface Appointment {
   id: number;
-  appointment_slot: AppointmentSlot; // Foreign key to AppointmentSlot
-  user: User; // Foreign key to User
+  appointment_slot: AppointmentSlot;
+  user: User;
 }
 
-// Appointment History model
+// AppointmentHistory model
 export interface AppointmentHistory {
   id: number;
-  user: User; // Foreign key to User
-  doctor: Doctor; // Foreign key to Doctor
-  price: number; // DecimalField for price
-  date: string; // DateTimeField in ISO format
+  user: User;
+  doctor: Doctor;
+  price: number;
+  date: Date;
 }
 
 // Prescription model
 export interface Prescription {
   id: number;
-  appointment_history: AppointmentHistory; // Foreign key to AppointmentHistory
-  notes: string; // Notes field
+  appointment_history: AppointmentHistory;
+  notes: string;
 }
 
-// Medication Master model
+// MedicationMaster model
 export interface MedicationMaster {
   id: number;
   name: string;
@@ -75,8 +84,8 @@ export interface MedicationMaster {
     | 'Tablet'
     | 'Inhaler'
     | 'Capsule'
-    | 'Drops'; // Enum for dosage form
-  strength: string; // e.g., 500mg
+    | 'Drops';
+  strength: string;
   manufacturer: string;
   indication:
     | 'Virus'
@@ -86,18 +95,18 @@ export interface MedicationMaster {
     | 'Fungus'
     | 'Diabetes'
     | 'Depression'
-    | 'Fever'; // Enum for indication
-  classification: string; // e.g., Antibiotic
+    | 'Fever';
+  classification: string;
 }
 
-// Medicine Prescription model
+// MedicinePrescription model
 export interface MedicinePrescription {
   id: number;
-  prescription: Prescription; // Foreign key to Prescription
-  medicine: MedicationMaster; // Foreign key to MedicationMaster
-  dosage: string; // e.g., 1 tablet
-  frequency: 'Morning' | 'Afternoon' | 'Evening' | 'Night'; // Enum for frequency choices
-  when?: ('Morning' | 'Afternoon' | 'Evening' | 'Night')[]; // MultiSelectField for multiple choices
+  prescription: Prescription;
+  medicine: MedicationMaster;
+  dosage: string;
+  frequency: ('Morning' | 'Afternoon' | 'Evening' | 'Night')[];
+  empty_stomach: boolean;
 }
 
 export interface SignUpData extends User {
@@ -127,4 +136,83 @@ export interface SignUpResponse {
     | 'Email already exists'
     | 'Username already exists'
     | 'Invalid JSON format';
+}
+
+export interface MedicinesResponse {
+  classification: string;
+  dosage: string;
+  dosage_form: string;
+  empty_stomach: true;
+  frequency: ('Morning' | 'Afternoon' | 'Evening' | 'Night')[];
+  indication:
+    | 'Virus'
+    | 'Infection'
+    | 'Wound'
+    | 'Pain'
+    | 'Fungus'
+    | 'Diabetes'
+    | 'Depression'
+    | 'Fever';
+  manufacturer: string;
+  medicine_name: string;
+  strength: string;
+}
+
+export interface AppointmentResponse {
+  user?: {
+    first_name: string;
+    last_name: string;
+    email: string;
+  };
+  doctor?: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    qualification: string;
+    years_of_experience: number;
+    profile_photo?: string;
+  };
+  hospital: Hospital;
+  appointment_slot: {
+    start_time: string | Date;
+    price: string;
+    status: 'booked' | 'available';
+  };
+}
+
+export interface DoctorsResponse {
+  doctor: {
+    first_name: string;
+    last_name: string;
+    license_number: string;
+    years_of_experience: number;
+    hospital: Hospital;
+    specialities: string[];
+    profile_photo?: string;
+  };
+  appointment_slots: AppointmentSlot[];
+}
+
+export interface PrescriptionResponse {
+  doctor: {
+    first_name: string;
+    last_name: string;
+    license_number: string;
+    years_of_experience: number;
+    hospital: Hospital;
+    profile_photo?: string;
+  };
+  medicines: {
+    medicine_name: string;
+    dosage: string;
+    frequency: ('Morning' | 'Afternoon' | 'Evening' | 'Night')[];
+    empty_stomach: boolean;
+  }[];
+  notes: string;
+  date: string | Date; // or Date
+}
+
+export interface DoctorsRequest {
+  q: string;
+  categories: string[];
 }

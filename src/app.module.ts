@@ -13,9 +13,16 @@ import { routes } from './app/app.routes';
 import { HomeComponent } from './app/components/home/home.component';
 import { LoginComponent } from './app/components/login/login.component';
 import { SignupComponent } from './app/components/signup/signup.component';
+import { DoctorsComponent } from './app/components/doctors/doctors.component';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, LoginComponent, SignupComponent],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    LoginComponent,
+    SignupComponent,
+    DoctorsComponent,
+  ],
   bootstrap: [AppComponent],
   imports: [BrowserModule, RouterModule.forRoot(routes), ReactiveFormsModule],
   providers: [
