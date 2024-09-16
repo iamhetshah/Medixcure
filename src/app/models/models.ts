@@ -5,7 +5,7 @@ export interface User {
   last_name: string;
   email: string;
   date_of_birth: string | null;
-  gender: 'M' | 'F' | 'O' | null;
+  gender: 'male' | 'female' | string;
   profile_photo?: string;
   role: 'D' | 'P';
   license_number?: string;
@@ -106,17 +106,25 @@ export interface SignUpData extends User {
 
 export interface LoginResponse extends User {
   token: string;
+  error?: string | 'Username and password are required' | 'Invalid credentials';
 }
 export interface LoginData {
   username: string;
   password: string;
 }
 
-export interface ErrorAuth {
-  message: 'Username already taken.' | null;
+export interface LogoutResponse {
+  error?: string | 'Invalid request method.' | 'Invalid token';
+  message?: 'Logout successful';
 }
 
-export interface LogoutResponse {
-  error?: string | 'No user is logged in.';
-  message?: string;
+export interface SignUpResponse {
+  message: string;
+  user: LoginResponse;
+  error?:
+    | string
+    | 'Missing required fields'
+    | 'Email already exists'
+    | 'Username already exists'
+    | 'Invalid JSON format';
 }

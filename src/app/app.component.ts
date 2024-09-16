@@ -7,12 +7,6 @@ import { AuthService } from './services/auth/auth.service';
   styleUrl: './app.component.css',
 })
 export class AppComponent {
-  constructor(private auth: AuthService) {
-    //   this.auth.login({
-    //     username: 'admin',
-    //     password: 'admin',
-    //   });
-    this.auth.logout();
-  }
+  constructor(private auth: AuthService) {}
   title = 'medixcure';
 }

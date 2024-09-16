@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import {
-  ErrorAuth,
   LoginData,
   LoginResponse,
   LogoutResponse,
   SignUpData,
+  SignUpResponse,
   User,
 } from '../../models/models';
 import { HttpClient } from '@angular/common/http';
 
 import { constants } from '../../../../constants';
 import { Router } from '@angular/router';
+import { catchError, map, of, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +21,6 @@ export class AuthService {
   private user: User | undefined = undefined;
   constructor(private http: HttpClient, private router: Router) {
     const sessionId = localStorage.getItem(constants.TOKEN);
-    console.log(sessionId);
     if (sessionId) {
       const u = localStorage.getItem('user');
       if (u) {
@@ -41,46 +41,43 @@ export class AuthService {
           console.log(response);
         }
       },
-      error: (err) => {},
+      error: (err) => {
+        return err.error;
+      },
     });
   }
 
   signup(data: SignUpData) {
-    const error: ErrorAuth = {
-      message: null,
-    };
-    this.http
-      .post<{ user: LoginResponse }>(
-        constants.BASE_URL + 'signup/',
-        JSON.stringify(data)
-      )
-      .subscribe({
-        next: (response) => {
+    return this.http
+      .post<SignUpResponse>(`${constants.BASE_URL}signup/`, data)
+      .pipe(
+        map((response: SignUpResponse) => {
           this.handleLogin(response.user);
-        },
-        error: (e) => {
-          error.message = e.error;
-        },
-      });
-    return error;
+          return response;
+        }),
+        catchError((error) => {
+          return throwError(() => error); // Propagate the error back to the subscriber
+        })
+      );
   }
 
   login(data: LoginData) {
-    const error: ErrorAuth = {
-      message: null,
-    };
     if (!this.authenticated) {
-      this.http
-        .post<{ user: LoginResponse }>(`${constants.BASE_URL}login/`, data)
-        .subscribe({
-          next: (response) => {
-            this.handleLogin(response.user);
-          },
-          error: (e) => {
-            error.message = e.error;
-          },
-        });
+      return this.http
+        .post<LoginResponse>(`${constants.BASE_URL}login/`, data)
+        .pipe(
+          map((loginRes: LoginResponse, idx: number) => {
+            if (!loginRes.error) {
+              this.handleLogin(loginRes);
+            }
+            return loginRes;
+          }),
+          catchError((error) => {
+            return throwError(() => error);
+          })
+        );
     }
+    return undefined;
   }
 
   private handleLogin(user: LoginResponse) {
@@ -103,6 +100,6 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('session_id');
+    return localStorage.getItem(constants.TOKEN);
   }
 }
