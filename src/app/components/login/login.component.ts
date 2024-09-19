@@ -44,7 +44,7 @@ export class LoginComponent {
         username: this.loginForm.controls.username.value!,
         password: this.loginForm.controls.password.value!,
       };
-      this.auth.login(data)?.subscribe({
+      this.auth.login(data)!.subscribe({
         next(data) {},
         error: (err) => {
           this.backendError = err.error.error;

@@ -29,8 +29,6 @@ export class HomeComponent {
   }
 
   timeRemaining(date: Date | string) {
-    console.log(date);
-
     date = new Date(date);
     const remaining = convertSeconds(secondsRemaining(date));
 

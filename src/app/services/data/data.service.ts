@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
+import { effect, Injectable, signal } from '@angular/core';
 import {
   AppointmentResponse,
   DoctorsRequest,
@@ -9,6 +9,8 @@ import {
 } from '../../models/models';
 import { constants } from '../../../../constants';
 import { map } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -17,12 +19,18 @@ export class DataService {
   private myMedicines = signal<MedicinesResponse[]>([]);
   private myAppointments = signal<AppointmentResponse[]>([]);
   private myPrescriptions = signal<PrescriptionResponse[]>([]);
-  private doctors = signal<DoctorsResponse[]>([]);
-  constructor(private http: HttpClient) {
+  public doctors = signal<DoctorsResponse[]>([]);
+  private specialities = signal<string[]>([]);
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService,
+    private router: Router
+  ) {
     this.getMedicines();
     this.getAppointments();
     this.getPrescriptions();
-    this.getDoctors0({
+    this.getSpecialities0();
+    this.updateDoctors({
       q: '',
       categories: [],
     });
@@ -40,8 +48,16 @@ export class DataService {
     return this.myPrescriptions.asReadonly();
   }
 
-  public getDoctors(data: DoctorsRequest) {
+  public getDoctors() {
     return this.doctors.asReadonly();
+  }
+
+  public updateDoctors(data: DoctorsRequest) {
+    this.getDoctors0(data);
+  }
+
+  public get getSpecialities() {
+    return this.specialities.asReadonly();
   }
 
   private getDoctors0(data: DoctorsRequest) {
@@ -54,6 +70,30 @@ export class DataService {
         next: (res) => {
           this.doctors.set(res.doctors);
         },
+        error: (err) => {
+          if (err.status === 401) {
+            this.auth.removeAuthData();
+            this.router.navigate(['/login']);
+          }
+        },
+      });
+  }
+
+  private getSpecialities0() {
+    this.http
+      .get<{ specialities: string[] }>(
+        constants.BASE_URL + 'get_specializations'
+      )
+      .subscribe({
+        next: (res) => {
+          this.specialities.set(res.specialities);
+        },
+        error: (err) => {
+          if (err.status === 401) {
+            this.auth.removeAuthData();
+            this.router.navigate(['/login']);
+          }
+        },
       });
   }
 
@@ -65,6 +105,12 @@ export class DataService {
       .subscribe({
         next: (response) => {
           this.myMedicines.set(response.prescription_details);
+        },
+        error: (err) => {
+          if (err.status === 401) {
+            this.auth.removeAuthData();
+            this.router.navigate(['/login']);
+          }
         },
       });
   }
@@ -88,6 +134,12 @@ export class DataService {
         next: (res) => {
           this.myAppointments.set(res.appointments);
         },
+        error: (err) => {
+          if (err.status === 401) {
+            this.auth.removeAuthData();
+            this.router.navigate(['/login']);
+          }
+        },
       });
   }
 
@@ -108,6 +160,12 @@ export class DataService {
       .subscribe({
         next: (res) => {
           this.myPrescriptions.set(res.prescriptions);
+        },
+        error: (err) => {
+          if (err.status === 401) {
+            this.auth.removeAuthData();
+            this.router.navigate(['/login']);
+          }
         },
       });
   }

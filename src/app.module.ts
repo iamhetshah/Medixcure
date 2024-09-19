@@ -14,6 +14,7 @@ import { HomeComponent } from './app/components/home/home.component';
 import { LoginComponent } from './app/components/login/login.component';
 import { SignupComponent } from './app/components/signup/signup.component';
 import { DoctorsComponent } from './app/components/doctors/doctors.component';
+import { NavbarComponent } from './app/components/nav-menu/nav-menu.component';
 
 @NgModule({
   declarations: [
@@ -22,9 +23,15 @@ import { DoctorsComponent } from './app/components/doctors/doctors.component';
     LoginComponent,
     SignupComponent,
     DoctorsComponent,
+    NavbarComponent,
   ],
   bootstrap: [AppComponent],
-  imports: [BrowserModule, RouterModule.forRoot(routes), ReactiveFormsModule],
+  imports: [
+    BrowserModule,
+    RouterModule.forRoot(routes),
+    ReactiveFormsModule,
+    FormsModule,
+  ],
   providers: [
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
   ],

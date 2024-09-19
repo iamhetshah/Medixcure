@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import {
   LoginData,
   LoginResponse,
@@ -17,7 +17,7 @@ import { catchError, map, of, throwError } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  private authenticated: boolean = false;
+  private authenticated = signal(false);
   private user: User | undefined = undefined;
   constructor(private http: HttpClient, private router: Router) {
     const sessionId = localStorage.getItem(constants.TOKEN);
@@ -25,7 +25,7 @@ export class AuthService {
       const u = localStorage.getItem('user');
       if (u) {
         this.user = JSON.parse(u);
-        this.authenticated = true;
+        this.authenticated.update((last) => true);
       }
     }
   }
@@ -33,10 +33,8 @@ export class AuthService {
     this.http.get<LogoutResponse>(constants.BASE_URL + 'logout').subscribe({
       next: (response) => {
         if (!response.error) {
-          localStorage.removeItem(constants.TOKEN);
-          localStorage.removeItem('user');
-          this.user = undefined;
-          this.authenticated = false;
+          this.removeAuthData();
+          this.router.navigate(['/login']);
         } else {
           console.log(response);
         }
@@ -45,6 +43,13 @@ export class AuthService {
         return err.error;
       },
     });
+  }
+
+  removeAuthData() {
+    localStorage.removeItem(constants.TOKEN);
+    localStorage.removeItem('user');
+    this.user = undefined;
+    this.authenticated.update((last) => false);
   }
 
   signup(data: SignUpData) {
@@ -62,7 +67,7 @@ export class AuthService {
   }
 
   login(data: LoginData) {
-    if (!this.authenticated) {
+    if (!this.authenticated()) {
       return this.http
         .post<LoginResponse>(`${constants.BASE_URL}login/`, data)
         .pipe(
@@ -84,7 +89,7 @@ export class AuthService {
     localStorage.setItem(constants.TOKEN, user.token);
     localStorage.setItem('user', JSON.stringify(user));
     this.user = user;
-    this.authenticated = true;
+    this.authenticated.update((last) => true);
     this.router.navigate(['']);
   }
 
@@ -96,7 +101,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.authenticated;
+    return this.authenticated();
   }
 
   getToken(): string | null {

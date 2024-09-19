@@ -184,11 +184,12 @@ export interface DoctorsResponse {
   doctor: {
     first_name: string;
     last_name: string;
-    license_number: string;
+    license_number?: string;
     years_of_experience: number;
     hospital: Hospital;
     specialities: string[];
     profile_photo?: string;
+    id?: number;
   };
   appointment_slots: AppointmentSlot[];
 }
