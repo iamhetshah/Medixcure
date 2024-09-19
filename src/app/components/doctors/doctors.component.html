@@ -30,7 +30,7 @@
         @for (doc of this.doctors; track $index) {
         <div class="bg-white shadow-lg rounded-xl overflow-hidden transition transform hover:scale-101 hover:shadow-lg">
             <div class="flex flex-col md:flex-row">
-                <div class="aspect-square">
+                <div class="">
                     <img [src]="this.defaultImageHospital(doc.doctor.hospital.photo)"
                         class="w-full md:max-h-64 object-cover">
                 </div>
@@ -47,7 +47,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 11a4 4 0 100-8 4 4 0 000 8z"></path>
                         </svg>
-                        <div class="flex gap-1">
+                        <div class="flex gap-1 capitalize">
                             @for (s of doc.doctor.specialities; track $index) {
                             <span>
                                 {{s + (($index!==doc.doctor.specialities.length - 1)?' | ':'') }}
@@ -115,7 +115,7 @@
                 <!-- Appointment Date -->
                 <div class="grid gap-2">
                     <label for="date" class="font-semibold">Date:</label>
-                    <input id="date" type="date" class="border border-gray-300 p-2 rounded-lg w-full">
+                    <input id="date" type="date" class="border border-gray-300 p-2 rounded-lg w-full" #date>
                 </div>
 
                 <div class="flex flex-wrap gap-2">

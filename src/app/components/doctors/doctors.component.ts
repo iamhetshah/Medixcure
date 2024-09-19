@@ -1,8 +1,16 @@
-import { Component, computed, effect, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { AppointmentSlot, DoctorsResponse } from '../../models/models';
 import { DataService } from '../../services/data/data.service';
 import { constants } from '../../../../constants';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-doctors',
@@ -10,6 +18,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
   styleUrl: './doctors.component.css',
 })
 export class DoctorsComponent {
+  @ViewChild('date') date!: ElementRef;
   selectedDoctor: DoctorsResponse | undefined = undefined;
   protected doctors: DoctorsResponse[] = [];
   protected specialities: string[] = [];
@@ -17,7 +26,11 @@ export class DoctorsComponent {
   protected query = signal('');
   private formCategories: Array<{ name: string; value: string }> = [];
   protected cateogriesGroup: FormGroup;
-  constructor(private data: DataService, private fb: FormBuilder) {
+  constructor(
+    private data: DataService,
+    private fb: FormBuilder,
+    private http: HttpClient
+  ) {
     this.cateogriesGroup = this.fb.group({
       categories: new FormArray([]),
     });
@@ -44,7 +57,7 @@ export class DoctorsComponent {
       const query = this.query();
       this.data.updateDoctors({
         q: query,
-        categories: this.cateogriesGroup.value.categories,
+        specialities: this.cateogriesGroup.value.categories,
       });
     });
   }
@@ -74,7 +87,7 @@ export class DoctorsComponent {
 
     this.data.updateDoctors({
       q: this.query(),
-      categories: this.cateogriesGroup.value.categories,
+      specialities: this.cateogriesGroup.value.categories,
     });
   }
 
@@ -114,11 +127,28 @@ export class DoctorsComponent {
   }
 
   bookSlot() {
+    function getDateTime(dateString: string, seconds: number) {
+      const date = new Date(dateString + 'T00:00:00');
+      date.setSeconds(date.getSeconds() + seconds);
+
+      return date;
+    }
     const data = {
       appointment_slot_id: this.selectedSlot?.id,
       doctor_id: this.selectedDoctor?.doctor.id,
+      start_time: getDateTime(
+        this.date.nativeElement.value,
+        this.selectedSlot?.start_time!
+      ).toISOString(),
+      booked_at: new Date().toISOString(),
     };
 
     console.log(data);
+
+    this.http.post(constants.BASE_URL + 'book_slot/', data).subscribe({
+      next: (data) => {
+        this.closeModal();
+      },
+    });
   }
 }

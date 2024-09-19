@@ -21,18 +21,8 @@
             <div class="border-t border-gray-200 mt-4">
                 <ul class="divide-y divide-gray-200 mt-4">
                     @for (appo of this.myAppointments; track $index) {
-                    <li class="bg-gray-50 p-4 rounded-md flex justify-between items-center">
-                        <div>
-                            <p class="font-semibold text-indigo-600 capitalize">{{'Dr. ' + appo.doctor?.first_name +
-                                ' ' +
-                                appo.doctor?.last_name}}</p>
-                            <p class="text-gray-600">{{appo.doctor?.qualification}}</p>
-                            <p class="text-sm text-gray-500">
-                                {{this.timeRemaining(appo.appointment_slot.start_time)}}</p>
-                        </div>
-                        <button class="bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600">View
-                            Details</button>
-                    </li>
+                    <app-appointment-card [appointment]="appo"
+                        (removeMe)="this.removeAppointment($index)"></app-appointment-card>
                     }
                 </ul>
             </div>
@@ -91,7 +81,7 @@
             <div class="border-t border-gray-200 mt-4">
                 <ul class="divide-y divide-gray-200 mt-4">
                     @for (p of this.myPrescriptions; track $index) {
-                    <li class="bg-gray-50 p-4 rounded-md flex justify-between items-center">
+                    <!-- <li class="bg-gray-50 p-4 rounded-md flex justify-between items-center">
                         <div>
                             <p class="font-semibold capitalize text-yellow-600">{{'dr. ' + p.doctor.first_name +
                                 ' ' +
@@ -101,11 +91,15 @@
                         </div>
                         <button class="bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600">View
                             Prescription</button>
-                    </li>
+                    </li> -->
+                    <app-prescription-card
+                        (selectPrescription)="this.selectedPrescription = p; this.openPrescriptionModal()"
+                        [prescription]="p"></app-prescription-card>
                     }
                 </ul>
             </div>
         </div>
-
     </div>
+    <app-prescription-modal [isOpen]="this.isModalPrescriptionOpen" [prescription]="this.selectedPrescription"
+        (close)="this.closePrescriptionModal()" (open)="this.openPrescriptionModal()"></app-prescription-modal>
 </main>

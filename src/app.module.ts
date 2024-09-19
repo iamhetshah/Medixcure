@@ -15,6 +15,9 @@ import { LoginComponent } from './app/components/login/login.component';
 import { SignupComponent } from './app/components/signup/signup.component';
 import { DoctorsComponent } from './app/components/doctors/doctors.component';
 import { NavbarComponent } from './app/components/nav-menu/nav-menu.component';
+import { AppointmentCardComponent } from './app/components/appointment-card/appointment-card.component';
+import { PrescriptionCardComponent } from './app/components/prescription-card/prescription-card.component';
+import { PrescriptionModalComponent } from './app/components/prescription-modal/prescription-modal.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +27,9 @@ import { NavbarComponent } from './app/components/nav-menu/nav-menu.component';
     SignupComponent,
     DoctorsComponent,
     NavbarComponent,
+    AppointmentCardComponent,
+    PrescriptionCardComponent,
+    PrescriptionModalComponent,
   ],
   bootstrap: [AppComponent],
   imports: [

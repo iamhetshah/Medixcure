@@ -1,0 +1,26 @@
+<li class="bg-gray-50 p-4 rounded-md flex justify-between items-center">
+    <div>
+        <p class="font-semibold text-indigo-600 capitalize">{{'Dr. ' + this.appointment.person?.first_name +
+            ' ' +
+            this.appointment.person?.last_name}}</p>
+        <p class="text-gray-600">{{this.appointment.person?.qualification}}</p>
+        <p class="text-sm text-gray-500">
+            {{this.timeRemaining(this.appointment.start_time!)}}</p>
+
+        <!-- <p class="text-sm text-gray-500">
+            <span class="font-semibold">
+                Booked At:
+            </span>
+            {{this.format_Date(this.appointment.booked_at!)}}
+        </p> -->
+    </div>
+    <button class="text-white py-2 px-4 rounded-lg " (click)="this.cancel_booking()"
+        [ngClass]="{'hover:bg-indigo-600 bg-indigo-500': this.auth.getUser()!.role === 'D', 'hover:bg-red-600 bg-red-500': this.auth.getUser()!.role === 'P'}">
+        @if (this.auth.getUser()!.role==='D') {
+        Prescribe
+        }
+        @else {
+        Cancel
+        }
+    </button>
+</li>

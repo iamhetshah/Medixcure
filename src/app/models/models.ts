@@ -43,7 +43,7 @@ export interface Doctor {
 export interface AppointmentSlot {
   id?: number;
   doctor?: Doctor;
-  start_time: Date | number;
+  start_time: number;
   price: number;
   status: 'available' | 'booked';
 }
@@ -159,10 +159,16 @@ export interface MedicinesResponse {
 }
 
 export interface AppointmentResponse {
-  user?: {
+  book_slot_id?: number;
+  booked_at?: string;
+  start_time?: string;
+  person?: {
     first_name: string;
     last_name: string;
+    qualification?: string;
+    years_of_experience?: number;
     email: string;
+    gender: string;
   };
   doctor?: {
     first_name: string;
@@ -190,6 +196,7 @@ export interface DoctorsResponse {
     specialities: string[];
     profile_photo?: string;
     id?: number;
+    qualification?: string;
   };
   appointment_slots: AppointmentSlot[];
 }
@@ -215,5 +222,5 @@ export interface PrescriptionResponse {
 
 export interface DoctorsRequest {
   q: string;
-  categories: string[];
+  specialities: string[];
 }

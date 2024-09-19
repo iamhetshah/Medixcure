@@ -27,12 +27,12 @@ export class DataService {
     private router: Router
   ) {
     this.getMedicines();
-    this.getAppointments();
+    this.getUpcomingAppointments();
     this.getPrescriptions();
     this.getSpecialities0();
     this.updateDoctors({
       q: '',
-      categories: [],
+      specialities: [],
     });
   }
 
@@ -115,10 +115,10 @@ export class DataService {
       });
   }
 
-  private getAppointments() {
+  private getUpcomingAppointments() {
     this.http
       .get<{ appointments: AppointmentResponse[] }>(
-        constants.BASE_URL + 'get_appointments'
+        constants.BASE_URL + 'get_upcoming_appointments/'
       )
       .pipe(
         map((res: { appointments: AppointmentResponse[] }) => {
@@ -145,8 +145,9 @@ export class DataService {
 
   private getPrescriptions() {
     this.http
-      .get<{ prescriptions: PrescriptionResponse[] }>(
-        constants.BASE_URL + 'get_prescriptions'
+      .post<{ prescriptions: PrescriptionResponse[] }>(
+        constants.BASE_URL + 'get_prescriptions/',
+        {}
       )
       .pipe(
         map((res: { prescriptions: PrescriptionResponse[] }) => {

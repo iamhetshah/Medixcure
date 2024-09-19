@@ -7,6 +7,7 @@
         </a>
     </div>
 
+    @if (this.auth.isAuthenticated()) {
     <!-- Toggle button for small devices -->
     <button id="menu-toggle"
         class="block lg:hidden text-blue-700 focus:outline-none hover:text-teal-400 transition-all duration-300"
@@ -42,4 +43,5 @@
             </svg>
         </button>
     </ul>
+    }
 </nav>
