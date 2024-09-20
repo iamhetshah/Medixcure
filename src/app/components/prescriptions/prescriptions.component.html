@@ -1,0 +1,132 @@
+@if (this.prescriptionMap.get(this.appointment()?.book_slot_id!)) {
+<div id="prescription-modal" class="fixed inset-0 bg-gray-800 p-2 bg-opacity-75 flex items-center justify-center"
+    [ngClass]="{'hidden': !this.isModalPrescriptionOpen}">
+    <div
+        class="bg-white rounded-lg overflow-hidden max-h-[80%] overflow-y-auto shadow-xl max-w-5xl w-full p-5 relative">
+        <div class="flex justify-between mb-6 me-11">
+            <h3 class="text-2xl font-bold">Appointment Details</h3>
+            <button class="bg-indigo-500 text-white py-2 px-5 rounded" (click)="savePrescription()">Done</button>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="col-span-1">
+                <div class="flex flex-col">
+                    <p class="text-xl font-bold text-gray-900">Patient</p>
+                    <p class="text-md text-gray-800 mt-1 capitalize">{{appointment()?.person?.first_name +
+                        ' ' +
+                        appointment()?.person?.last_name}}</p>
+
+                    <p class="text-gray-500 capitalize">{{appointment()?.person?.gender === 'M'?
+                        'Male':'Female' }}</p>
+                </div>
+            </div>
+            <div class="col-span-1">
+                <div class="flex flex-col">
+                    <p class="text-xl font-bold text-gray-900">Date</p>
+                    <p class="text-md text-gray-800 mt-1">{{ this.formatDate0(appointment()!.start_time!) }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-6 flex gap-2 grid-flow-col">
+            <!-- Search Input -->
+            <textarea type="text" [(ngModel)]="this.prescriptionMap.get(this.appointment()!.book_slot_id)!.note"
+                class="w-full rounded border max-h-60 min-h-32 p-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                placeholder="Note for patient"></textarea>
+
+        </div>
+        <!-- Medicine Details Table -->
+        <div class="overflow-x-auto">
+            <table class="table-auto w-full bg-gray-100 rounded-lg">
+                <thead>
+                    <tr class="bg-gray-200 text-gray-700">
+                        <th class="py-2 px-4">Medicine</th>
+                        <th class="py-2 px-4">Dosage</th>
+                        <th class="py-2 px-4 text-center">Morning</th>
+                        <th class="py-2 px-4 text-center">Afternoon</th>
+                        <th class="py-2 px-4 text-center">Evening</th>
+                        <th class="py-2 px-4 text-center">Night</th>
+                        <th class="py-2 px-4 text-center">Empty Stomach</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let medicine of this.prescriptionMap.get(this.appointment()?.book_slot_id!)?.medicines">
+                        <td class="py-2 px-4">{{ medicine.name }}</td>
+                        <td class="py-2 px-4">
+                            <input type="text" [(ngModel)]="medicine.dosage"
+                                class="w-full border rounded outline-none p-1">
+                        </td>
+                        <td class="py-2 px-4">
+                            <app-toggle-switch class="flex justify-center items-center"
+                                (toggle)="changeVal(medicine, $event, 0)"></app-toggle-switch>
+                        </td>
+                        <td class="py-2 px-4">
+                            <app-toggle-switch class="flex justify-center items-center"
+                                (toggle)="changeVal(medicine, $event, 1)"></app-toggle-switch>
+                        </td>
+                        <td class="py-2 px-4">
+                            <app-toggle-switch class="flex justify-center items-center"
+                                (toggle)="changeVal(medicine, $event, 2)"></app-toggle-switch>
+                        </td>
+                        <td class="py-2 px-4">
+                            <app-toggle-switch class="flex justify-center items-center"
+                                (toggle)="this.changeVal(medicine, $event, 3)"></app-toggle-switch>
+                        </td>
+                        <td class="py-2 px-4">
+                            <app-toggle-switch class="flex justify-center items-center"
+                                (toggle)="this.changeVal(medicine, $event, 4)"></app-toggle-switch>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <div class="mb-6 flex gap-2 grid-flow-col">
+            <!-- Search Input -->
+            <input type="text" (focus)="this.isFocused = true" (blur)="this.isFocused = false" [(ngModel)]="this.query"
+                (input)="fetchSuggestions()"
+                class="w-full rounded border p-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                placeholder="Search">
+        </div>
+        <div *ngIf="suggestions() && suggestions().length > 0">
+            <div *ngFor="let med of suggestions()" (click)="this.addMedicine(med)"
+                class="bg-white cursor-pointer hover:bg-gray-100 rounded-lg mb-4 p-4 border">
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">{{ med.name }}</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                        <span class="font-medium text-gray-600">Category:</span>
+                        <span class="text-gray-700">{{ med.category }}</span>
+                    </div>
+
+                    <div>
+                        <span class="font-medium text-gray-600">Dosage Form:</span>
+                        <span class="text-gray-700">{{ med.dosage_form }}</span>
+                    </div>
+
+                    <div>
+                        <span class="font-medium text-gray-600">Indication:</span>
+                        <span class="text-gray-700">{{ med.indication }}</span>
+                    </div>
+
+                    <div>
+                        <span class="font-medium text-gray-600">Strength:</span>
+                        <span class="text-gray-700">{{ med.strength }}</span>
+                    </div>
+
+                    <div>
+                        <span class="font-medium text-gray-600">Manufacturer:</span>
+                        <span class="text-gray-700">{{ med.manufacturer }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button (click)="closePrescriptionModal()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                </path>
+            </svg>
+        </button>
+    </div>
+</div>
+}

@@ -18,6 +18,8 @@ import { NavbarComponent } from './app/components/nav-menu/nav-menu.component';
 import { AppointmentCardComponent } from './app/components/appointment-card/appointment-card.component';
 import { PrescriptionCardComponent } from './app/components/prescription-card/prescription-card.component';
 import { PrescriptionModalComponent } from './app/components/prescription-modal/prescription-modal.component';
+import { PrescriptionsComponent } from './app/components/prescriptions/prescriptions.component';
+import { ToggleSwitchComponent } from './app/components/toggle-switch/toggle-switch.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,8 @@ import { PrescriptionModalComponent } from './app/components/prescription-modal/
     AppointmentCardComponent,
     PrescriptionCardComponent,
     PrescriptionModalComponent,
+    PrescriptionsComponent,
+    ToggleSwitchComponent,
   ],
   bootstrap: [AppComponent],
   imports: [

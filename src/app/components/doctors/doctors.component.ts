@@ -11,6 +11,7 @@ import { DataService } from '../../services/data/data.service';
 import { constants } from '../../../../constants';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-doctors',
@@ -26,10 +27,12 @@ export class DoctorsComponent {
   protected query = signal('');
   private formCategories: Array<{ name: string; value: string }> = [];
   protected cateogriesGroup: FormGroup;
+  protected newslot: boolean = false;
   constructor(
     private data: DataService,
     private fb: FormBuilder,
-    private http: HttpClient
+    private http: HttpClient,
+    protected auth: AuthService
   ) {
     this.cateogriesGroup = this.fb.group({
       categories: new FormArray([]),
@@ -135,7 +138,7 @@ export class DoctorsComponent {
     }
     const data = {
       appointment_slot_id: this.selectedSlot?.id,
-      doctor_id: this.selectedDoctor?.doctor.id,
+      doctor_id: this.selectedDoctor?.doctor.doctor_id,
       start_time: getDateTime(
         this.date.nativeElement.value,
         this.selectedSlot?.start_time!
@@ -143,12 +146,31 @@ export class DoctorsComponent {
       booked_at: new Date().toISOString(),
     };
 
-    console.log(data);
-
     this.http.post(constants.BASE_URL + 'book_slot/', data).subscribe({
       next: (data) => {
         this.closeModal();
+        this.data.reload();
       },
     });
+  }
+
+  removeSlot(slot: AppointmentSlot) {
+    this.http.get(constants.BASE_URL + '');
+  }
+
+  addSlot(hours: number, minutes: number, price: number) {
+    const start_time = hours * 3600 + minutes * 60;
+    console.log(start_time, price);
+    this.http
+      .post(constants.BASE_URL + 'add_appointment_slot/', {
+        start_time,
+        price,
+      })
+      .subscribe({
+        next: (req) => {
+          this.closeModal();
+          this.data.reload();
+        },
+      });
   }
 }

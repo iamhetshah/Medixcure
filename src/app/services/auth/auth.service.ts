@@ -104,6 +104,10 @@ export class AuthService {
     return this.authenticated();
   }
 
+  isAuthenticatedSignal() {
+    return this.authenticated.asReadonly();
+  }
+
   getToken(): string | null {
     return localStorage.getItem(constants.TOKEN);
   }

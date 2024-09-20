@@ -26,14 +26,13 @@ export class DataService {
     private auth: AuthService,
     private router: Router
   ) {
-    this.getMedicines();
-    this.getUpcomingAppointments();
-    this.getPrescriptions();
-    this.getSpecialities0();
-    this.updateDoctors({
-      q: '',
-      specialities: [],
+    effect(() => {
+      const a = this.auth.isAuthenticatedSignal();
+      if (a()) {
+        this.reload();
+      }
     });
+    this.reload();
   }
 
   public get getMyMedicines() {
@@ -58,6 +57,17 @@ export class DataService {
 
   public get getSpecialities() {
     return this.specialities.asReadonly();
+  }
+
+  public reload() {
+    this.getMedicines();
+    this.getUpcomingAppointments();
+    this.getPrescriptions();
+    this.getSpecialities0();
+    this.updateDoctors({
+      q: '',
+      specialities: [],
+    });
   }
 
   private getDoctors0(data: DoctorsRequest) {

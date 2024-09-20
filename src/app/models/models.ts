@@ -111,6 +111,11 @@ export interface MedicinePrescription {
 
 export interface SignUpData extends User {
   password: string;
+  specialities: string[];
+  years_of_experience: number;
+  qualification: string;
+  hospital: Hospital;
+  license_number: number;
 }
 
 export interface LoginResponse extends User {
@@ -159,9 +164,9 @@ export interface MedicinesResponse {
 }
 
 export interface AppointmentResponse {
-  book_slot_id?: number;
-  booked_at?: string;
-  start_time?: string;
+  book_slot_id: number;
+  booked_at: string;
+  start_time: string;
   person?: {
     first_name: string;
     last_name: string;
@@ -195,14 +200,20 @@ export interface DoctorsResponse {
     hospital: Hospital;
     specialities: string[];
     profile_photo?: string;
-    id?: number;
+    doctor_id: number;
+    user_id: number;
     qualification?: string;
   };
   appointment_slots: AppointmentSlot[];
 }
 
 export interface PrescriptionResponse {
-  doctor: {
+  user?: {
+    email: string;
+    first_name: string;
+    last_name: string;
+  };
+  doctor?: {
     first_name: string;
     last_name: string;
     license_number: string;
@@ -223,4 +234,21 @@ export interface PrescriptionResponse {
 export interface DoctorsRequest {
   q: string;
   specialities: string[];
+}
+
+export interface Prescribe {
+  book_id: number;
+  note: string;
+  medicines: {
+    name: string;
+    medicine_id: number;
+    dosage: string;
+    frequency: {
+      morning: boolean;
+      afternoon: boolean;
+      evening: boolean;
+      night: boolean;
+    };
+    empty_stomach: boolean;
+  }[];
 }

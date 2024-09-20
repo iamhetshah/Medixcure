@@ -21,8 +21,8 @@
             <div class="border-t border-gray-200 mt-4">
                 <ul class="divide-y divide-gray-200 mt-4">
                     @for (appo of this.myAppointments; track $index) {
-                    <app-appointment-card [appointment]="appo"
-                        (removeMe)="this.removeAppointment($index)"></app-appointment-card>
+                    <app-appointment-card (open)="this.openDrPrescriptionModal(); this.selectedDrPrescription.set(appo)"
+                        [appointment]="appo" (removeMe)="this.removeAppointment($index)"></app-appointment-card>
                     }
                 </ul>
             </div>
@@ -47,18 +47,38 @@
             <div class="border-t border-gray-200 mt-4">
                 <ul class="divide-y divide-gray-200 mt-4">
                     @for (med of this.myMedicines; track $index) {
-                    <li class="bg-gray-50 p-4 rounded-md flex justify-between items-center">
-                        <div>
-                            <p class="font-semibold text-green-600">{{med.medicine_name}}</p>
-                            <p class="text-gray-600">Dosage: {{med.dosage}}</p>
-                            <p class="text-sm text-gray-500">{{med.frequency}}</p>
+                    <li
+                        class="bg-white p-4 rounded-md flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                        <!-- Medicine Information Grid -->
+                        <div class="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Left Column -->
+                            <div>
+                                <p class="font-semibold text-green-600 text-lg">{{ med.medicine_name }}</p>
+                                <p class="text-sm text-gray-600">Strength: {{ med.strength }}</p>
+                                <p class="text-sm text-gray-600">Dosage: {{ med.dosage }} ({{ med.dosage_form }})</p>
+                                <p class="text-sm text-gray-600">Classification: {{ med.classification }}</p>
+                            </div>
+                            <!-- Right Column -->
+                            <div>
+                                <p class="text-sm text-gray-600">Take on Empty Stomach:
+                                    <span class="font-medium text-{{ med.empty_stomach ? 'green-500' : 'red-500' }}">
+                                        {{ med.empty_stomach ? 'Yes' : 'No' }}
+                                    </span>
+                                </p>
+                                <p class="text-sm text-gray-600">Frequency:
+                                    <span class="text-gray-500">
+                                        {{ med.frequency.join(', ') }}
+                                    </span>
+                                </p>
+                                <p class="text-sm text-gray-600">Indication: {{ med.indication }}</p>
+                                <p class="text-sm text-gray-500">Manufacturer: {{ med.manufacturer }}</p>
+                            </div>
                         </div>
-                        <button class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">More
-                            Info</button>
                     </li>
                     }
                 </ul>
             </div>
+
         </div>
 
         <!-- Prescriptions -->
@@ -81,25 +101,22 @@
             <div class="border-t border-gray-200 mt-4">
                 <ul class="divide-y divide-gray-200 mt-4">
                     @for (p of this.myPrescriptions; track $index) {
-                    <!-- <li class="bg-gray-50 p-4 rounded-md flex justify-between items-center">
-                        <div>
-                            <p class="font-semibold capitalize text-yellow-600">{{'dr. ' + p.doctor.first_name +
-                                ' ' +
-                                p.doctor.last_name}}</p>
-                            <p class="text-gray-600">{{this.formatDate(p.date)}}</p>
-                            <p class="text-sm text-gray-500">{{p.notes}}</p>
-                        </div>
-                        <button class="bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600">View
-                            Prescription</button>
-                    </li> -->
                     <app-prescription-card
-                        (selectPrescription)="this.selectedPrescription = p; this.openPrescriptionModal()"
+                        (selectPrescription)="this.selectedPrescription.set(p); this.openPrescriptionModal()"
                         [prescription]="p"></app-prescription-card>
                     }
                 </ul>
             </div>
         </div>
     </div>
-    <app-prescription-modal [isOpen]="this.isModalPrescriptionOpen" [prescription]="this.selectedPrescription"
-        (close)="this.closePrescriptionModal()" (open)="this.openPrescriptionModal()"></app-prescription-modal>
+
+    @if(this.selectedPrescription()) {
+    <app-prescription-modal [prescription]="this.selectedPrescription" (close)="this.closePrescriptionModal()"
+        [isOpen]="this.isModalPrescriptionOpen"></app-prescription-modal>
+    }
+
+    @if(this.selectedDrPrescription()) {
+    <app-prescriptions [appointment]="this.selectedDrPrescription" (close)="this.closeDrPrescriptionModal()"
+        [isOpen]="this.isModalDrPrescriptionOpen"></app-prescriptions>
+    }
 </main>

@@ -1,14 +1,31 @@
+@if(this.auth.getUser()?.role === 'D') {
 <li class="bg-gray-50 p-4 rounded-md flex justify-between items-center">
     <div>
         <p class="font-semibold text-yellow-600 capitalize">
-            {{prescription.doctor.first_name
+            {{prescription?.user?.first_name
             +
             ' ' +
-            prescription.doctor.last_name}}
+            prescription?.user?.last_name}}
         </p>
-        <p class="text-gray-600">{{formatDate(prescription.date)}}</p>
-        <p class="text-sm text-gray-500">{{prescription.notes}}</p>
+        <p class="text-gray-600">{{formatDate(prescription!.date)}}</p>
+        <p class="text-sm text-gray-500">{{prescription?.notes}}</p>
     </div>
     <button (click)="this.selectPrescription.emit()"
         class="bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600">View Prescription</button>
 </li>
+} @else if(this.auth.getUser()?.role === 'P') {
+<li class="bg-gray-50 p-4 rounded-md flex justify-between items-center">
+    <div>
+        <p class="font-semibold text-yellow-600 capitalize">
+            {{prescription?.doctor?.first_name
+            +
+            ' ' +
+            prescription?.doctor?.last_name}}
+        </p>
+        <p class="text-gray-600">{{formatDate(prescription!.date)}}</p>
+        <p class="text-sm text-gray-500">{{prescription?.notes}}</p>
+    </div>
+    <button (click)="this.selectPrescription.emit()"
+        class="bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600">View Prescription</button>
+</li>
+}

@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, Signal } from '@angular/core';
 import { PrescriptionResponse } from '../../models/models';
 import { formatDate } from '../../utils/utils';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-prescription-card',
@@ -9,10 +10,11 @@ import { formatDate } from '../../utils/utils';
 })
 export class PrescriptionCardComponent {
   // Modal State
-  @Input('prescription') prescription!: PrescriptionResponse;
+  @Input('prescription') prescription!: PrescriptionResponse | undefined;
   @Output('selectPrescription') selectPrescription: EventEmitter<any> =
     new EventEmitter();
-  isModalOpen: boolean = false;
+
+  constructor(protected auth: AuthService) {}
 
   formatDate(date: Date | string) {
     date = new Date(date);

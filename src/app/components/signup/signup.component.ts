@@ -1,8 +1,10 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, signal } from '@angular/core';
 import { AuthService } from '../../services/auth/auth.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { SignUpData } from '../../models/models';
+import { Hospital, SignUpData } from '../../models/models';
 import { first } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { constants } from '../../../../constants';
 
 @Component({
   selector: 'app-signup',
@@ -33,8 +35,40 @@ export class SignupComponent implements AfterViewInit {
     gender: new FormControl('male', {
       validators: [Validators.pattern('^(male|female)$')],
     }),
+    isDoctor: new FormControl(false, {
+      validators: [Validators.required],
+    }),
+    specialities: new FormControl('', {
+      validators: [Validators.required],
+    }),
+    yoe: new FormControl(0, {
+      validators: [Validators.required],
+    }),
+    qualification: new FormControl('', {
+      validators: [Validators.required],
+    }),
+    lno: new FormControl(0, {
+      validators: [Validators.required],
+    }),
+
+    hospital: new FormControl(undefined, {
+      validators: [Validators.required],
+    }),
   });
-  constructor(private auth: AuthService) {}
+
+  protected hospitals = signal<Hospital[]>([]);
+
+  isDoctor: boolean = false;
+  constructor(private auth: AuthService, private http: HttpClient) {
+    this.http
+      .get<{ hospitals: Hospital[] }>(constants.BASE_URL + 'get_hospital')
+      .subscribe({
+        next: (res) => {
+          this.hospitals.update((old) => res.hospitals);
+          console.log(this.hospitals());
+        },
+      });
+  }
   ngAfterViewInit(): void {}
 
   public get firstNameNotValid(): boolean {
@@ -86,11 +120,43 @@ export class SignupComponent implements AfterViewInit {
   }
 
   public get genderNotValid(): boolean {
+    console.log(this.signupForm.controls.gender.value);
     return (
       this.signupForm.controls.gender.dirty &&
       this.signupForm.controls.gender.touched &&
       !this.signupForm.controls.gender.valid
     );
+  }
+
+  updateDoctorFieldsValidators(isDoctor: boolean): void {
+    const specialitiesControl = this.signupForm.get('specialities');
+    const yoeControl = this.signupForm.get('yoe');
+    const qualificationControl = this.signupForm.get('qualification');
+    const lnoControl = this.signupForm.get('lno');
+    const hospitalControl = this.signupForm.get('hospital');
+
+    if (isDoctor) {
+      // Add required validators if isDoctor is true
+      specialitiesControl?.setValidators([Validators.required]);
+      yoeControl?.setValidators([Validators.required, Validators.min(1)]);
+      qualificationControl?.setValidators([Validators.required]);
+      lnoControl?.setValidators([Validators.required]);
+      hospitalControl?.setValidators([Validators.required]);
+    } else {
+      // Clear validators if isDoctor is false
+      specialitiesControl?.clearValidators();
+      yoeControl?.clearValidators();
+      qualificationControl?.clearValidators();
+      lnoControl?.clearValidators();
+      hospitalControl?.clearValidators();
+    }
+
+    // Update the form controls to reflect the changes
+    specialitiesControl?.updateValueAndValidity();
+    yoeControl?.updateValueAndValidity();
+    qualificationControl?.updateValueAndValidity();
+    lnoControl?.updateValueAndValidity();
+    hospitalControl?.updateValueAndValidity();
   }
 
   disbaleButton() {
@@ -106,6 +172,14 @@ export class SignupComponent implements AfterViewInit {
   }
 
   signIn() {
+    if (this.isDoctor) {
+      this.signInDoctor();
+    } else {
+      this.signInPatient();
+    }
+  }
+
+  signInDoctor() {
     const data: SignUpData = {
       password: this.signupForm.controls.password.value!,
       first_name: this.signupForm.controls.first_name.value!,
@@ -113,9 +187,42 @@ export class SignupComponent implements AfterViewInit {
       email: this.signupForm.controls.email.value!,
       date_of_birth: this.signupForm.controls.date_of_birth.value!,
       gender: this.signupForm.controls.gender.value!,
-      role: 'P',
+      role: this.signupForm.controls.isDoctor.value! ? 'D' : 'P',
       username: this.signupForm.controls.username.value!,
+      specialities: this.signupForm.controls.specialities.value!.split(','),
+      years_of_experience: this.signupForm.controls.yoe.value!,
+      qualification: this.signupForm.controls.qualification.value!,
+      hospital: this.signupForm.controls.hospital.value!,
+      license_number: this.signupForm.controls.lno.value!,
     };
+
+    console.log(data);
+
+    this.auth.signup(data).subscribe({
+      error: (err) => {
+        this.backendError = err.error.error;
+      },
+    });
+  }
+
+  signInPatient() {
+    const data: SignUpData = {
+      password: this.signupForm.controls.password.value!,
+      first_name: this.signupForm.controls.first_name.value!,
+      last_name: this.signupForm.controls.last_name.value!,
+      email: this.signupForm.controls.email.value!,
+      date_of_birth: this.signupForm.controls.date_of_birth.value!,
+      gender: this.signupForm.controls.gender.value!,
+      role: this.signupForm.controls.isDoctor.value! ? 'D' : 'P',
+      username: this.signupForm.controls.username.value!,
+      specialities: this.signupForm.controls.specialities.value!.split(','),
+      years_of_experience: this.signupForm.controls.yoe.value!,
+      qualification: this.signupForm.controls.qualification.value!,
+      hospital: this.signupForm.controls.hospital.value!,
+      license_number: this.signupForm.controls.lno.value!,
+    };
+
+    console.log(data);
 
     this.auth.signup(data).subscribe({
       error: (err) => {

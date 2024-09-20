@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth/auth.service';
 import { convertSeconds, secondsRemaining } from '../../utils/utils';
 import { HttpClient } from '@angular/common/http';
 import { constants } from '../../../../constants';
+import { DataService } from '../../services/data/data.service';
 
 @Component({
   selector: 'app-appointment-card',
@@ -13,8 +14,13 @@ import { constants } from '../../../../constants';
 export class AppointmentCardComponent {
   @Input('appointment') appointment!: AppointmentResponse;
   @Output('removeMe') removeMe: EventEmitter<any> = new EventEmitter();
+  @Output('open') open = new EventEmitter();
   protected cancelled: boolean = false;
-  constructor(protected auth: AuthService, private http: HttpClient) {}
+  constructor(
+    protected auth: AuthService,
+    private http: HttpClient,
+    private data: DataService
+  ) {}
   timeRemaining(date: Date | string) {
     date = new Date(date);
     const remaining = convertSeconds(secondsRemaining(date));
@@ -64,6 +70,7 @@ export class AppointmentCardComponent {
             'Booking canceled and appointment history removed successfully.'
           ) {
             this.removeMe.emit();
+            this.data.reload();
           }
         },
       });

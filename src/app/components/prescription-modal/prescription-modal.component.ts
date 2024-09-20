@@ -1,6 +1,15 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  effect,
+  EventEmitter,
+  Input,
+  Output,
+  Signal,
+  signal,
+} from '@angular/core';
 import { formatDate } from '../../utils/utils';
 import { PrescriptionResponse } from '../../models/models';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-prescription-modal',
@@ -9,10 +18,28 @@ import { PrescriptionResponse } from '../../models/models';
 })
 export class PrescriptionModalComponent {
   @Input('isOpen') isModalPrescriptionOpen!: boolean;
-  @Input('prescription') prescription!: PrescriptionResponse | undefined;
+  @Input('prescription') prescription!: Signal<
+    PrescriptionResponse | undefined
+  >;
+
+  protected filteredPres: PrescriptionResponse | undefined;
+  protected query = signal('');
 
   @Output('close') close = new EventEmitter();
-  @Output('open') open = new EventEmitter();
+
+  constructor(protected auth: AuthService) {
+    effect(() => {
+      const q = this.query();
+      if (this.prescription()) {
+        this.filteredPres = {
+          ...this.prescription()!,
+          medicines: this.prescription()!.medicines.filter((ele) => {
+            return ele.medicine_name.toLowerCase().includes(q.toLowerCase());
+          }),
+        };
+      }
+    });
+  }
 
   formatDate0(date: Date | string) {
     date = new Date(date);
@@ -22,17 +49,11 @@ export class PrescriptionModalComponent {
   checkIfIn(obj: string, list: string[]) {
     var x;
     for (x of list) {
-      console.log(obj);
       if (x.toLowerCase() == obj.toLowerCase()) {
         return true;
       }
     }
     return false;
-  }
-
-  openPrescriptionModal() {
-    this.isModalPrescriptionOpen = true;
-    this.open.emit();
   }
 
   closePrescriptionModal() {
