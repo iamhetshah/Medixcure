@@ -30,9 +30,9 @@
         @for (doc of this.doctors; track $index) {
         <div class="bg-white shadow-lg rounded-xl overflow-hidden transition transform hover:scale-101 hover:shadow-lg">
             <div class="flex flex-col md:flex-row">
-                <div class="">
+                <div class="aspect-square w-96">
                     <img [src]="this.defaultImageHospital(doc.doctor.hospital.photo)"
-                        class="aspect-video max-h-80 object-cover">
+                        class="w-full h-full object-cover">
                 </div>
                 <div class="p-6 md:w-3/4">
                     <h2 class="text-2xl font-bold text-indigo-700 mb-2 capitalize">{{'Dr. ' + doc.doctor.first_name
@@ -138,7 +138,7 @@
                             [ngClass]="{'bg-green-400 shadow-md scale-105': this.selectedSlot === slot}"
                             class="relative bg-gray-200 py-4 px-4 rounded-lg flex-1 duration-100 text-center">
                             <div class="text-sm font-semibold">{{this.fromMidnight(slot.start_time)}}</div>
-                            <div class="text-sm text-gray-600 mt-1">${{slot.price}}</div>
+                            <div class="text-sm text-gray-600 mt-1">₹{{slot.price}}</div>
                             @if (this.auth.getUser()!.role === 'D' && this.auth.getUser()!.id ===
                             this.selectedDoctor?.doctor?.user_id) {
                             <div (click)="removeSlot(slot)"
