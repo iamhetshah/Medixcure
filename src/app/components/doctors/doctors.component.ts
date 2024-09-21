@@ -72,6 +72,7 @@ export class DoctorsComponent {
     document.getElementById('modal')?.classList.add('hidden');
     this.selectedSlot = undefined;
     this.selectedDoctor = undefined;
+    this.pastBookingError = false;
   }
 
   onCheckboxChange(e: any) {
@@ -129,6 +130,7 @@ export class DoctorsComponent {
     }
   }
 
+  protected pastBookingError: boolean = false;
   bookSlot() {
     function getDateTime(dateString: string, seconds: number) {
       const date = new Date(dateString + 'T00:00:00');
@@ -136,13 +138,24 @@ export class DoctorsComponent {
 
       return date;
     }
+
+    console.log(this.date.nativeElement.value, this.selectedSlot!.start_time!);
+
+    const date = getDateTime(
+      this.date.nativeElement.value,
+      this.selectedSlot!.start_time!
+    );
+
+    if (new Date() > date) {
+      this.pastBookingError = true;
+      return;
+    }
+    this.pastBookingError = false;
+
     const data = {
       appointment_slot_id: this.selectedSlot?.id,
       doctor_id: this.selectedDoctor?.doctor.doctor_id,
-      start_time: getDateTime(
-        this.date.nativeElement.value,
-        this.selectedSlot?.start_time!
-      ).toISOString(),
+      start_time: date.toISOString(),
       booked_at: new Date().toISOString(),
     };
 
@@ -155,7 +168,26 @@ export class DoctorsComponent {
   }
 
   removeSlot(slot: AppointmentSlot) {
-    this.http.get(constants.BASE_URL + '');
+    this.http
+      .post(constants.BASE_URL + 'delete_slot/', {
+        slot_id: slot.id,
+      })
+      .subscribe({
+        next: (res) => {
+          let idx = 0;
+          for (let s of this.selectedDoctor!.appointment_slots) {
+            if (s.id === slot.id) {
+              break;
+            }
+            idx += 1;
+          }
+
+          this.selectedDoctor!.appointment_slots.splice(idx, 1);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
   }
 
   addSlot(hours: number, minutes: number, price: number) {

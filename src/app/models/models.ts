@@ -45,7 +45,6 @@ export interface AppointmentSlot {
   doctor?: Doctor;
   start_time: number;
   price: number;
-  status: 'available' | 'booked';
 }
 
 // Appointment model

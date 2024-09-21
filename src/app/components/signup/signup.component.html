@@ -17,6 +17,7 @@
                 </a>
             </div>
 
+
             @if (firstNameNotValid) {
             <div class="flex items-center p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50" role="alert">
                 <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -275,16 +276,12 @@
                 <!-- Years of Experience (YOE) Input -->
                 <div class="mt-8">
                     <div class="flex items-center space-x-6">
-                        <div class="flex items-center relative w-full">
-                            <span class="absolute left-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-400" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M13 16h-1v-4H9v-1h3V7h1v4h3v1h-3v4z" />
-                                </svg>
+                        <div class="grid grid-cols-12 grid-flow-col relative w-full">
+                            <span class="col-span-3">
+                                Y.O.E
                             </span>
                             <input type="number" [formControl]="this.signupForm.controls.yoe"
-                                class="block w-full py-3 text-gray-700 bg-white border rounded-lg pl-10 pr-4 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                                class="col-span-9 block w-full py-3 text-gray-700 bg-white border rounded-lg pl-10 pr-4 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                                 placeholder="Years of Experience">
                         </div>
                     </div>
@@ -293,16 +290,12 @@
                 <!-- License Number Input -->
                 <div class="mt-8">
                     <div class="flex items-center space-x-6">
-                        <div class="flex items-center relative w-full">
-                            <span class="absolute left-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-400" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M9 12h6m-6 4h6m-6 4h6m-3-20a9 9 0 110 18 9 9 0 010-18z" />
-                                </svg>
+                        <div class="grid grid-cols-12 grid-flow-col relative w-full">
+                            <span class="col-span-3">
+                                License Number
                             </span>
                             <input type="number" [formControl]="this.signupForm.controls.lno"
-                                class="block w-full py-3 text-gray-700 bg-white border rounded-lg pl-10 pr-4 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                                class="col-span-9  block w-full py-3 text-gray-700 bg-white border rounded-lg pl-10 pr-4 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                                 placeholder="License Number">
                         </div>
                     </div>
@@ -311,16 +304,12 @@
                 <!-- Qualification Input -->
                 <div class="mt-8">
                     <div class="flex items-center space-x-6">
-                        <div class="flex items-center relative w-full">
-                            <span class="absolute left-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-400" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 14l9-5-9-5-9 5 9 5zM12 14v10m0-10L3 9m9 5l9-5" />
-                                </svg>
+                        <div class="grid grid-cols-12 grid-flow-col relative w-full">
+                            <span class="col-span-3">
+                                Qualification
                             </span>
                             <input type="text" [formControl]="this.signupForm.controls.qualification"
-                                class="block w-full py-3 text-gray-700 bg-white border rounded-lg pl-10 pr-4 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                                class="col-span-9 block w-full py-3 text-gray-700 bg-white border rounded-lg pl-10 pr-4 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                                 placeholder="Qualification">
                         </div>
                     </div>
@@ -328,16 +317,12 @@
 
                 <div class="mt-8">
                     <div class="flex items-center space-x-6">
-                        <div class="flex items-center relative w-full">
-                            <span class="absolute left-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-400" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 14l9-5-9-5-9 5 9 5zM12 14v10m0-10L3 9m9 5l9-5" />
-                                </svg>
+                        <div class="grid grid-cols-12 grid-flow-col relative w-full">
+                            <span class="col-span-3">
+                                Hospital
                             </span>
                             <select
-                                class="block w-full py-3 text-gray-700 bg-white border rounded-lg pl-10 pr-4 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                                class="col-span-9 block w-full py-3 text-gray-700 bg-white border rounded-lg pl-10 pr-4 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                                 name="hospital" id="" [formControl]="this.signupForm.controls.hospital">
                                 @for (hospital of this.hospitals(); track $index) {
                                 <option [value]="hospital.id">
@@ -351,7 +336,7 @@
             </div>
             }
             <div class="mt-6">
-                <button [disabled]="this.signupForm.invalid"
+                <button [disabled]="this.formNotValid()"
                     class="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
                     Sign Up
                 </button>

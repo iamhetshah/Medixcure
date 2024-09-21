@@ -171,7 +171,21 @@ export class SignupComponent implements AfterViewInit {
     );
   }
 
+  protected formNotValid = signal(false);
+
   signIn() {
+    if (
+      this.emailNotValid ||
+      this.genderNotValid ||
+      this.lastNameNotValid ||
+      this.passwordNotValid ||
+      this.usernameNotValid ||
+      this.firstNameNotValid ||
+      this.dateOfBirthNotValid
+    ) {
+      this.formNotValid.set(true);
+      return;
+    }
     if (this.isDoctor) {
       this.signInDoctor();
     } else {
